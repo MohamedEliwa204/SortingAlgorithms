@@ -3,13 +3,13 @@ package org.example;
 import javax.swing.*;
 import java.util.List;
 
-public class BubbleSort extends SwingWorker<Void, int[]> {
+public class InsertionSort extends SwingWorker<Void, int[]> {
 
     private int[] array;
     private SortPanel sortPanel;
     private int comparisons = 0;
     private int interchanges = 0;
-    private String currentStatus = "Starting Bubble Sort...";
+    private String currentStatus = "Starting Insertion Sort...";
     private int interchangedIdx1 = -1;
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
@@ -17,7 +17,7 @@ public class BubbleSort extends SwingWorker<Void, int[]> {
 
     private int speed;
 
-    public BubbleSort(int[] array, SortPanel sortPanel, int speed) {
+    public InsertionSort(int[] array, SortPanel sortPanel, int speed) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
@@ -25,41 +25,63 @@ public class BubbleSort extends SwingWorker<Void, int[]> {
 
     @Override
     protected Void doInBackground() throws Exception {
-        for (int i = 0; i < array.length - 1; i++) {
-            for (int j = 0; j < array.length - i - 1; j++) {
+        for (int i = 1; i < array.length; i++) {
+            int key = array[i];
+            int j = i - 1;
+            currentStatus = "Picking key" + key;
+            comparedIdx1 = i;
+            comparedIdx2 = -1;
+            interchangedIdx1 = -1;
+            interchangedIdx2 = -1;
+            publish(array.clone());
+            Thread.sleep(speed);
+
+            while (j >= 0){
                 comparisons++;
                 comparedIdx1 = j;
-                comparedIdx2 = j + 1;
+                comparedIdx2 = j + 1; // key
                 interchangedIdx1 = -1;
                 interchangedIdx2 = -1;
-                currentStatus = "Comparing " + array[j] + " and " + array[j + 1];
+                currentStatus = "Comparing key: " + key + "with: " + array[j];
+
                 publish(array.clone());
                 Thread.sleep(speed);
-                if (array[j] > array[j + 1]) {
+                if (array[j] > key){
                     interchanges++;
-                    comparedIdx2 = -1;
-                    comparedIdx1 = -1;
                     interchangedIdx1 = j;
                     interchangedIdx2 = j + 1;
-                    currentStatus = "Swaping " + array[j] + "and" + array[j + 1];
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
+                    comparedIdx2 = -1;
+                    comparedIdx1 = -1;
+
+                    currentStatus = "Shifting " + key + "to the right";
+                    array[j + 1] = array[j];
                     publish(array.clone());
                     Thread.sleep(speed);
+                    j = j - 1;
 
+                }else {
+                    break;
                 }
+                array[j] = key;
+                comparedIdx1 = -1;
+                comparedIdx2 = -1;
+                interchangedIdx1 = j + 1;
+                interchangedIdx2 = -1;
+                currentStatus = "Inserted " + key + "at place" + j;
+                publish(array.clone());
+                Thread.sleep(speed);
             }
+
         }
         return null;
     }
 
     @Override
-    protected void process(List<int[]> chunks) {
+    protected void process(List<int[]> chunks){
         int[] arr = chunks.getLast();
         sortPanel.updateVisualization(arr, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
-    }
 
+    }
     @Override
     protected void done(){
         try {
