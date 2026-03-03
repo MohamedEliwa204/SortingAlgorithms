@@ -10,19 +10,23 @@ public class SortPanel extends JPanel {
     private int interChanges = 0;
 
     private String statusText = "Ready to Sort!";
-    private int highlightIdx1 = -1;
-    private int highlightIdx2 = -1;
+    private int intechangedIdx1 = -1;
+    private int interChangedIdx2 = -1;
+    private int comparedIdx1 = -1;
+    private int comparedIdx2 = -1;
     public SortPanel(){
         setBackground(Color.DARK_GRAY);
         ToolTipManager.sharedInstance().registerComponent(this); // for the value of  bars
     }
-    public void updateVisualization(int[] array, int comparisons, int interChanges, String statusText, int highlightIdx1, int highlightIdx2){
+    public void updateVisualization(int[] array, int comparisons, int interChanges, String statusText, int intechangedIdx1, int intechangedIdx2, int comparedIdx1, int comparedIdx2){
         this.array = array.clone();
         this.comparisons = comparisons;
         this.interChanges = interChanges;
         this.statusText = statusText;
-        this.highlightIdx1 = highlightIdx1;
-        this.highlightIdx2 = highlightIdx2;
+        this.intechangedIdx1 = intechangedIdx1;
+        this.interChangedIdx2 = intechangedIdx2;
+        this.comparedIdx1 = comparedIdx1;
+        this.comparedIdx2 = comparedIdx2;
         repaint();
     }
     @Override
@@ -47,9 +51,11 @@ public class SortPanel extends JPanel {
             int barHeight = (int) (((double) array[i] / max) * (height - 100));
             int x = i * barWidth;
             int y = height - barHeight;
-            if (i == highlightIdx1 || i == highlightIdx2){
+            if (i == intechangedIdx1 || i == interChangedIdx2){
                 g2d.setColor(Color.RED);
-            }else{
+            } else if (i == comparedIdx1 || i == comparedIdx2) {
+                g2d.setColor(Color.YELLOW);
+            } else{
                 g2d.setColor(Color.CYAN);
             }
 
