@@ -95,6 +95,9 @@ public class HeapSort extends SwingWorker<Void, SortState> {
             interchangedIdx1 = i;
             interchangedIdx2 = largest;
             currentStatus = "Swapping the parent " + array[i] + "with " + array[largest];
+            int temp = array[i];
+            array[i] = array[largest];
+            array[largest] = temp;
             SortState currentState = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
             publish(currentState);
             Thread.sleep(speed);

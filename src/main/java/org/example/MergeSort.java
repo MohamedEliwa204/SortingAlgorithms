@@ -28,7 +28,7 @@ public class MergeSort extends SwingWorker<Void, int[]> {
     }
 
     private void mergeSort(int start, int end) throws Exception{
-        if (end < start){
+        if (end <= start){
             return;
         }
         int mid = start + (end - start) / 2;
