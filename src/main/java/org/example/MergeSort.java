@@ -23,7 +23,7 @@ public class MergeSort extends SwingWorker<Void, int[]> {
     }
     @Override
     protected Void doInBackground() throws Exception {
-
+        mergeSort(0, array.length - 1);
         return null;
     }
 
