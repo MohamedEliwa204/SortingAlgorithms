@@ -1,4 +1,4 @@
-package org.example;
+package org.example.algovisual;
 
 public class SortState {
     public int[] array;
