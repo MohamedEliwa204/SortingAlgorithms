@@ -1,9 +1,12 @@
-package org.example;
+package org.example.algovisual;
+
+import org.example.SortPanel;
+import org.example.SortState;
 
 import javax.swing.*;
 import java.util.List;
 
-public class SelectionSort extends SwingWorker<Void, int[]> {
+public class SelectionSort extends SwingWorker<Void, SortState> {
     private int[] array;
     private SortPanel sortPanel;
     private int comparisons = 0;
@@ -34,7 +37,7 @@ public class SelectionSort extends SwingWorker<Void, int[]> {
                 interchangedIdx1 = -1;
                 interchangedIdx2 = -1;
                 currentStatus = "Comparing " + array[j] + "the minimum value in the sub array" + min;
-                publish(array.clone());
+                publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                 Thread.sleep(speed);
                 if (array[j] < min) {
                     min = array[j];
@@ -52,16 +55,19 @@ public class SelectionSort extends SwingWorker<Void, int[]> {
             int temp = array[idx];
             array[idx] = array[i];
             array[i] = temp;
-            publish(array.clone());
+            publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
             Thread.sleep(speed);
         }
         return null;
     }
 
     @Override
-    protected void process(List<int[]> chunks) {
-        int[] arr = chunks.getLast();
-        sortPanel.updateVisualization(arr, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
+    protected void process(List<SortState> chunks) {
+        SortState state = chunks.getLast();
+        sortPanel.updateVisualization(state.array, state.comparisons,
+                state.interchanges, state.currentStatus,
+                state.interchangedIdx1, state.interchangedIdx2,
+                state.comparedIdx1, state.comparedIdx2);
     }
 
     @Override

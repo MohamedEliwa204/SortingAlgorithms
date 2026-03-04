@@ -1,8 +1,10 @@
-package org.example;
+package org.example.algovisual;
+
+import org.example.SortPanel;
+import org.example.SortState;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class HeapSort extends SwingWorker<Void, SortState> {
 

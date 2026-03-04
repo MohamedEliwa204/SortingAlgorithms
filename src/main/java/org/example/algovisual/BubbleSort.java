@@ -1,9 +1,12 @@
-package org.example;
+package org.example.algovisual;
+
+import org.example.SortPanel;
+import org.example.SortState;
 
 import javax.swing.*;
 import java.util.List;
 
-public class BubbleSort extends SwingWorker<Void, int[]> {
+public class BubbleSort extends SwingWorker<Void, SortState> {
 
     private int[] array;
     private SortPanel sortPanel;
@@ -33,7 +36,7 @@ public class BubbleSort extends SwingWorker<Void, int[]> {
                 interchangedIdx1 = -1;
                 interchangedIdx2 = -1;
                 currentStatus = "Comparing " + array[j] + " and " + array[j + 1];
-                publish(array.clone());
+                publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                 Thread.sleep(speed);
                 if (array[j] > array[j + 1]) {
                     interchanges++;
@@ -45,7 +48,7 @@ public class BubbleSort extends SwingWorker<Void, int[]> {
                     int temp = array[j];
                     array[j] = array[j + 1];
                     array[j + 1] = temp;
-                    publish(array.clone());
+                    publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                     Thread.sleep(speed);
 
                 }
@@ -55,9 +58,12 @@ public class BubbleSort extends SwingWorker<Void, int[]> {
     }
 
     @Override
-    protected void process(List<int[]> chunks) {
-        int[] arr = chunks.getLast();
-        sortPanel.updateVisualization(arr, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
+    protected void process(List<SortState> chunks) {
+        SortState state = chunks.getLast();
+        sortPanel.updateVisualization(state.array, state.comparisons,
+                state.interchanges, state.currentStatus,
+                state.interchangedIdx1, state.interchangedIdx2,
+                state.comparedIdx1, state.comparedIdx2);
     }
 
     @Override

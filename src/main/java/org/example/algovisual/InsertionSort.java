@@ -1,9 +1,12 @@
-package org.example;
+package org.example.algovisual;
+
+import org.example.SortPanel;
+import org.example.SortState;
 
 import javax.swing.*;
 import java.util.List;
 
-public class InsertionSort extends SwingWorker<Void, int[]> {
+public class InsertionSort extends SwingWorker<Void, SortState> {
 
     private int[] array;
     private SortPanel sortPanel;
@@ -33,7 +36,7 @@ public class InsertionSort extends SwingWorker<Void, int[]> {
             comparedIdx2 = -1;
             interchangedIdx1 = -1;
             interchangedIdx2 = -1;
-            publish(array.clone());
+            publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
             Thread.sleep(speed);
 
             while (j >= 0){
@@ -44,7 +47,7 @@ public class InsertionSort extends SwingWorker<Void, int[]> {
                 interchangedIdx2 = -1;
                 currentStatus = "Comparing key: " + key + "with: " + array[j];
 
-                publish(array.clone());
+                publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                 Thread.sleep(speed);
                 if (array[j] > key){
                     interchanges++;
@@ -55,7 +58,7 @@ public class InsertionSort extends SwingWorker<Void, int[]> {
 
                     currentStatus = "Shifting " + key + "to the right";
                     array[j + 1] = array[j];
-                    publish(array.clone());
+                    publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                     Thread.sleep(speed);
                     j = j - 1;
 
@@ -68,7 +71,7 @@ public class InsertionSort extends SwingWorker<Void, int[]> {
                 interchangedIdx1 = j + 1;
                 interchangedIdx2 = -1;
                 currentStatus = "Inserted " + key + "at place" + j;
-                publish(array.clone());
+                publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                 Thread.sleep(speed);
             }
 
@@ -77,10 +80,12 @@ public class InsertionSort extends SwingWorker<Void, int[]> {
     }
 
     @Override
-    protected void process(List<int[]> chunks){
-        int[] arr = chunks.getLast();
-        sortPanel.updateVisualization(arr, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
-
+    protected void process(List<SortState> chunks) {
+        SortState state = chunks.getLast();
+        sortPanel.updateVisualization(state.array, state.comparisons,
+                state.interchanges, state.currentStatus,
+                state.interchangedIdx1, state.interchangedIdx2,
+                state.comparedIdx1, state.comparedIdx2);
     }
     @Override
     protected void done(){
