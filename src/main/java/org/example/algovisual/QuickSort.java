@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -15,13 +16,14 @@ public class QuickSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public QuickSort(int[] array, SortPanel sortPanel, int speed) {
+    public QuickSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class QuickSort extends SwingWorker<Void, SortState> {
         interchangedIdx2 = -1;
         currentStatus = "Selected Pivot: " + pivot;
         publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-        Thread.sleep(speed);
+        playbackControl.sleepOrPause(speed);
         int i = start - 1;
         for (int j = start; j < end; j++) {
             comparisons++;
@@ -58,7 +60,7 @@ public class QuickSort extends SwingWorker<Void, SortState> {
             interchangedIdx2 = -1;
             currentStatus = "Comparing " + array[j] + " with pivot " + pivot;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
             if (array[j] < pivot) {
 
                 i++;
@@ -83,7 +85,7 @@ public class QuickSort extends SwingWorker<Void, SortState> {
         array[i] = array[j];
         array[j] = temp;
         publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-        Thread.sleep(speed);
+        playbackControl.sleepOrPause(speed);
     }
 
     @Override

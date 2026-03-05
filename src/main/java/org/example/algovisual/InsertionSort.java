@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -16,13 +17,14 @@ public class InsertionSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public InsertionSort(int[] array, SortPanel sortPanel, int speed) {
+    public InsertionSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class InsertionSort extends SwingWorker<Void, SortState> {
             interchangedIdx1 = -1;
             interchangedIdx2 = -1;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
 
             while (j >= 0){
                 comparisons++;
@@ -47,7 +49,7 @@ public class InsertionSort extends SwingWorker<Void, SortState> {
                 currentStatus = "Comparing key: " + key + "with: " + array[j];
 
                 publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                Thread.sleep(speed);
+                playbackControl.sleepOrPause(speed);
                 if (array[j] > key){
                     interchanges++;
                     interchangedIdx1 = j;
@@ -57,21 +59,22 @@ public class InsertionSort extends SwingWorker<Void, SortState> {
 
                     currentStatus = "Shifting " + array[j] + "to the right";
                     array[j + 1] = array[j];
+                    array[j] = key;
                     publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                    Thread.sleep(speed);
+                    playbackControl.sleepOrPause(speed);
                     j = j - 1;
 
                 }else {
                     break;
                 }
-                array[j] = key;
+                array[j + 1] = key;
                 comparedIdx1 = -1;
                 comparedIdx2 = -1;
                 interchangedIdx1 = j + 1;
                 interchangedIdx2 = -1;
                 currentStatus = "Inserted " + key + "at place" + j;
                 publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                Thread.sleep(speed);
+                playbackControl.sleepOrPause(speed);
             }
 
         }

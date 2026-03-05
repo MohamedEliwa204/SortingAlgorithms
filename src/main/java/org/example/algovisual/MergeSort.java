@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -15,13 +16,14 @@ public class MergeSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public MergeSort(int[] array, SortPanel sortPanel, int speed) {
+    public MergeSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
     @Override
     protected Void doInBackground() throws Exception {
@@ -63,7 +65,7 @@ public class MergeSort extends SwingWorker<Void, SortState> {
             interchangedIdx2 = -1;
             currentStatus = "Comparing " + leftArr[i] + "with" +rightArr[j];
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
             if (leftArr[i] <= rightArr[j]){
                 array[k] = leftArr[i];
                 i++;
@@ -71,7 +73,7 @@ public class MergeSort extends SwingWorker<Void, SortState> {
                 array[k] = rightArr[j];
                 j++;
             }
-            k++;
+
             interchanges++;
             comparedIdx2 = -1;
             comparedIdx1 = -1;
@@ -79,11 +81,12 @@ public class MergeSort extends SwingWorker<Void, SortState> {
             interchangedIdx2 = -1;
             currentStatus = "Placing " + array[k] + "at index" + k;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
+            k++;
 
         }
         while (i < n1){
-            array[k++] =leftArr[i++];
+            array[k] =leftArr[i++];
             interchanges++;
 
             comparedIdx2 = -1;
@@ -92,10 +95,11 @@ public class MergeSort extends SwingWorker<Void, SortState> {
             interchangedIdx2 = -1;
             currentStatus = "Placing " + array[k] + "at index" + k;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
+            k++;
         }
         while (j < n2){
-            array[k++] =rightArr[j++];
+            array[k] =rightArr[j++];
             interchanges++;
 
             comparedIdx2 = -1;
@@ -104,7 +108,8 @@ public class MergeSort extends SwingWorker<Void, SortState> {
             interchangedIdx2 = -1;
             currentStatus = "Placing " + array[k] + "at index" + k;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
+            k++;
         }
     }
 

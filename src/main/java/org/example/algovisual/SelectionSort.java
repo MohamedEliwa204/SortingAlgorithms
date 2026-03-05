@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -15,13 +16,14 @@ public class SelectionSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public SelectionSort(int[] array, SortPanel sortPanel, int speed) {
+    public SelectionSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class SelectionSort extends SwingWorker<Void, SortState> {
                 interchangedIdx2 = -1;
                 currentStatus = "Comparing " + array[j] + "the minimum value in the sub array" + min;
                 publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                Thread.sleep(speed);
+                playbackControl.sleepOrPause(speed);
                 if (array[j] < min) {
                     min = array[j];
                     idx = j;
@@ -55,7 +57,7 @@ public class SelectionSort extends SwingWorker<Void, SortState> {
             array[idx] = array[i];
             array[i] = temp;
             publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -16,13 +17,14 @@ public class BubbleSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public BubbleSort(int[] array, SortPanel sortPanel, int speed) {
+    public BubbleSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class BubbleSort extends SwingWorker<Void, SortState> {
                 interchangedIdx2 = -1;
                 currentStatus = "Comparing " + array[j] + " and " + array[j + 1];
                 publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                Thread.sleep(speed);
+                playbackControl.sleepOrPause(speed);
                 if (array[j] > array[j + 1]) {
                     interchanges++;
                     comparedIdx2 = -1;
@@ -48,7 +50,7 @@ public class BubbleSort extends SwingWorker<Void, SortState> {
                     array[j] = array[j + 1];
                     array[j + 1] = temp;
                     publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
-                    Thread.sleep(speed);
+                    playbackControl.sleepOrPause(speed);
 
                 }
             }

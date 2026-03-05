@@ -1,5 +1,6 @@
 package org.example.algovisual;
 
+import org.example.control.PlaybackControl;
 import org.example.control.SortPanel;
 
 import javax.swing.*;
@@ -16,13 +17,14 @@ public class HeapSort extends SwingWorker<Void, SortState> {
     private int interchangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-
+    private PlaybackControl playbackControl;
     private int speed;
 
-    public HeapSort(int[] array, SortPanel sortPanel, int speed) {
+    public HeapSort(int[] array, SortPanel sortPanel, int speed, PlaybackControl playbackControl) {
         this.array = array;
         this.sortPanel = sortPanel;
         this.speed = speed;
+        this.playbackControl = playbackControl;
     }
     @Override
     protected Void doInBackground() throws Exception {
@@ -47,7 +49,7 @@ public class HeapSort extends SwingWorker<Void, SortState> {
             array[i] = temp;
             SortState currentState1 = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
             publish(currentState1);
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
             heapify(i, 0);
         }
         return null;
@@ -67,7 +69,7 @@ public class HeapSort extends SwingWorker<Void, SortState> {
             currentStatus = "Comparing Parent " + array[largest] + "with left child " + array[left];
             SortState currentState = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
             publish(currentState);
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
 
             if (array[left] > array[largest]){
                 largest = left;
@@ -83,7 +85,7 @@ public class HeapSort extends SwingWorker<Void, SortState> {
             currentStatus = "Comparing current max " + array[largest] + "with right child " + array[right];
             SortState currentState = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
             publish(currentState);
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
 
             if (array[right] > array[largest]){
                 largest = right;
@@ -102,7 +104,7 @@ public class HeapSort extends SwingWorker<Void, SortState> {
             array[largest] = temp;
             SortState currentState = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
             publish(currentState);
-            Thread.sleep(speed);
+            playbackControl.sleepOrPause(speed);
             heapify(n, largest);
         }
     }

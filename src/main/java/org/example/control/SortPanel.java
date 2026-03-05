@@ -14,11 +14,14 @@ public class SortPanel extends JPanel {
     private int interChangedIdx2 = -1;
     private int comparedIdx1 = -1;
     private int comparedIdx2 = -1;
-    public SortPanel(){
-        setBackground(Color.DARK_GRAY);
-        ToolTipManager.sharedInstance().registerComponent(this); // for the value of  bars
+
+    public SortPanel() {
+
+        setBackground(new Color(30, 30, 35));
+        ToolTipManager.sharedInstance().registerComponent(this);
     }
-    public void updateVisualization(int[] array, int comparisons, int interChanges, String statusText, int intechangedIdx1, int intechangedIdx2, int comparedIdx1, int comparedIdx2){
+
+    public void updateVisualization(int[] array, int comparisons, int interChanges, String statusText, int intechangedIdx1, int intechangedIdx2, int comparedIdx1, int comparedIdx2) {
         this.array = array.clone();
         this.comparisons = comparisons;
         this.interChanges = interChanges;
@@ -29,55 +32,76 @@ public class SortPanel extends JPanel {
         this.comparedIdx2 = comparedIdx2;
         repaint();
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (array == null || array.length == 0){
+        if (array == null || array.length == 0) {
             return;
         }
+
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         int width = getWidth();
         int height = getHeight();
         int barWidth = width / array.length;
 
         int max = 0;
-        for (int val : array){
-            if (val > max){
-                max = val;
-            }
+        for (int val : array) {
+            if (val > max) max = val;
         }
 
         for (int i = 0; i < array.length; i++) {
-            int barHeight = (int) (((double) array[i] / max) * (height - 100));
+            int barHeight = (int) (((double) array[i] / max) * (height - 120));
             int x = i * barWidth;
-            int y = height - barHeight;
-            if (i == intechangedIdx1 || i == interChangedIdx2){
-                g2d.setColor(Color.RED);
+            int y = height - barHeight - 15;
+
+            Color topColor;
+            Color bottomColor;
+            if (i == intechangedIdx1 || i == interChangedIdx2) {
+                topColor = new Color(255, 85, 85);     // Neon Red
+                bottomColor = new Color(139, 0, 0);    // Dark Red
             } else if (i == comparedIdx1 || i == comparedIdx2) {
-                g2d.setColor(Color.YELLOW);
-            } else{
-                g2d.setColor(Color.CYAN);
+                topColor = new Color(255, 255, 85);    // Bright Yellow
+                bottomColor = new Color(204, 153, 0);  // Gold
+            } else {
+                topColor = new Color(0, 212, 255);     // Neon Cyan
+                bottomColor = new Color(9, 9, 121);    // Deep Blue
             }
 
-            g2d.fillRect(x, y, barWidth - 1, barHeight);
-            if (barWidth > 20){
+            GradientPaint gp = new GradientPaint(x, y, topColor, x, height, bottomColor);
+            g2d.setPaint(gp);
+            g2d.fillRoundRect(x, y, barWidth - 2, barHeight + 15, 10, 10);
+
+            g2d.setColor(new Color(0, 0, 0, 100));
+            g2d.drawRoundRect(x, y, barWidth - 2, barHeight + 15, 10, 10);
+            if (barWidth > 20) {
                 g2d.setColor(Color.WHITE);
-                g2d.setFont(new Font("Arial", Font.PLAIN, 10));
-                g2d.drawString(String.valueOf(array[i]), x + (barWidth / 4), y - 5);
+                g2d.setFont(new Font("Segoe UI", Font.BOLD, 12));
+
+                String valStr = String.valueOf(array[i]);
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = x + (barWidth - 2 - fm.stringWidth(valStr)) / 2;
+
+                g2d.drawString(valStr, textX, y - 8);
             }
-
-
         }
-        g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 16));
-        g2d.drawString("Status: "+ statusText, 15, 25);
-        g2d.drawString("comparisons: " + comparisons, 15, 50);
-        g2d.drawString("interchanges: " + interChanges, 15, 75);
+        g2d.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("Status: " + statusText, 17, 27);
+        g2d.setColor(new Color(0, 255, 150));
+        g2d.drawString("Status: " + statusText, 15, 25);
+        g2d.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.drawString("Comparisons: " + comparisons, 15, 50);
+        g2d.drawString("Interchanges: " + interChanges, 15, 75);
     }
 
     @Override
-    public String getToolTipText(MouseEvent e){
-        if(array == null || array.length == 0){
+    public String getToolTipText(MouseEvent e) {
+        if (array == null || array.length == 0) {
             return null;
         }
 
@@ -85,8 +109,8 @@ public class SortPanel extends JPanel {
         int MouseX = e.getX();
         int idx = MouseX / barWidth;
 
-        if (idx >= 0 && idx < array.length){
-            return "Value: " + array[idx];
+        if (idx >= 0 && idx < array.length) {
+            return "Index: " + idx + " | Value: " + array[idx];
         }
         return null;
     }
