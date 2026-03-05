@@ -85,7 +85,7 @@ public class MergeSort extends SwingWorker<Void, SortState> {
         while (i < n1){
             array[k++] =leftArr[i++];
             interchanges++;
-            interchanges++;
+
             comparedIdx2 = -1;
             comparedIdx1 = -1;
             interchangedIdx1 = k;
@@ -95,9 +95,9 @@ public class MergeSort extends SwingWorker<Void, SortState> {
             Thread.sleep(speed);
         }
         while (j < n2){
-            array[k++] =leftArr[j++];
+            array[k++] =rightArr[j++];
             interchanges++;
-            interchanges++;
+
             comparedIdx2 = -1;
             comparedIdx1 = -1;
             interchangedIdx1 = k;

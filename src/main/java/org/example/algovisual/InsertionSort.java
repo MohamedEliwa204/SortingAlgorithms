@@ -55,7 +55,7 @@ public class InsertionSort extends SwingWorker<Void, SortState> {
                     comparedIdx2 = -1;
                     comparedIdx1 = -1;
 
-                    currentStatus = "Shifting " + key + "to the right";
+                    currentStatus = "Shifting " + array[j] + "to the right";
                     array[j + 1] = array[j];
                     publish(new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2));
                     Thread.sleep(speed);

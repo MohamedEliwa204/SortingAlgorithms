@@ -30,6 +30,7 @@ public class HeapSort extends SwingWorker<Void, SortState> {
         currentStatus = "Building initial max Heap...";
         SortState currentState = new SortState(array, comparisons, interchanges, currentStatus, interchangedIdx1, interchangedIdx2, comparedIdx1, comparedIdx2);
         publish(currentState);
+        // as zero based
         for (int i = n / 2 - 1; i >= 0; i--) {
             heapify(n, i);
         }
