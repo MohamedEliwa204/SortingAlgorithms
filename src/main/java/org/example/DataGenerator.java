@@ -1,5 +1,7 @@
 package org.example;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -28,4 +30,16 @@ public class DataGenerator {
         }
         return reversed;
     }
+
+    public static int[] readFromFile(String filePath) throws Exception {
+        String content = Files.readString(Path.of(filePath));
+        String[] stringNumbers = content.split(",");
+
+        int[] arr = new int[stringNumbers.length];
+        for (int i = 0; i < stringNumbers.length; i++) {
+            arr[i] = Integer.parseInt(stringNumbers[i].trim());
+        }
+        return arr;
+    }
+
 }

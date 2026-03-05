@@ -24,9 +24,8 @@ public class Main {
 
             // comparison
             JPanel comparisonTab = new JPanel(new BorderLayout());
-            JLabel tempLabel = new JLabel("Sorting Comparison Table will go here!", SwingConstants.CENTER);
-            tempLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            comparisonTab.add(tempLabel, BorderLayout.CENTER);
+            ComparisonPanel comparisonPanel = new ComparisonPanel();
+            comparisonTab.add(comparisonPanel, BorderLayout.CENTER);
 
 
             tabbedPane.addTab("Visualization Mode", visualizationTab);

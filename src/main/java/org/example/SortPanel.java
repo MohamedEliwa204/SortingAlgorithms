@@ -86,7 +86,7 @@ public class SortPanel extends JPanel {
         int idx = MouseX / barWidth;
 
         if (idx >= 0 && idx < array.length){
-            return "Value" + array[idx];
+            return "Value: " + array[idx];
         }
         return null;
     }
