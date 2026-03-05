@@ -1,9 +1,8 @@
-package org.example;
+package org.example.control;
 
 import org.example.algovisual.*;
 
 import javax.swing.*;
-import java.util.zip.DataFormatException;
 
 public class ControlPanel extends JPanel {
     private SortPanel sortPanel;

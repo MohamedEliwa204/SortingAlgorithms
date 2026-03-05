@@ -1,4 +1,4 @@
-package org.example;
+package org.example.control;
 
 import org.example.algo.*;
 

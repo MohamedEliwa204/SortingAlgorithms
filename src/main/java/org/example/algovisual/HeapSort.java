@@ -1,6 +1,6 @@
 package org.example.algovisual;
 
-import org.example.SortPanel;
+import org.example.control.SortPanel;
 
 import javax.swing.*;
 import java.util.List;

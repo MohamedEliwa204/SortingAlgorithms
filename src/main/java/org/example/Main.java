@@ -1,5 +1,9 @@
 package org.example;
 
+import org.example.control.ComparisonPanel;
+import org.example.control.ControlPanel;
+import org.example.control.SortPanel;
+
 import javax.swing.*;
 import java.awt.*;
 

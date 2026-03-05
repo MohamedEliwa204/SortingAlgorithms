@@ -35,6 +35,6 @@ public class PureInsertionSort implements SortAlgorithm{
             array[j + 1] = key;
         }
         long endTime = System.nanoTime();
-        return new SortResult(startTime - endTime, comparisons, interchanges);
+        return new SortResult(endTime - startTime, comparisons, interchanges);
     }
 }

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.control;
 
 import javax.swing.*;
 import java.awt.*;

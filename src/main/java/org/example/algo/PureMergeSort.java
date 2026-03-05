@@ -21,7 +21,7 @@ public class PureMergeSort implements SortAlgorithm{
         startTime = System.nanoTime();
         mergeSort(0, array.length - 1);
         endTime = System.nanoTime();
-        return new SortResult(startTime - endTime, comparisons, interchanges);
+        return new SortResult(endTime - startTime, comparisons, interchanges);
     }
     
     private void mergeSort(int start, int end){
