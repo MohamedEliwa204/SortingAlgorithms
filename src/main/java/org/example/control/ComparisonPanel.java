@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.List;
 
 public class ComparisonPanel extends JPanel {
@@ -20,7 +21,7 @@ public class ComparisonPanel extends JPanel {
     private JButton chooseFileBtn;
     private JLabel fileLabel;
     private JButton runBtn;
-
+    private JButton exportBtn;
     private DefaultTableModel tableModel;
     private JTable resultTable;
 
@@ -37,7 +38,7 @@ public class ComparisonPanel extends JPanel {
         sizeSpinner = new JSpinner(new SpinnerNumberModel(1000, 10, 10000, 100));
         String[] arrayTypes = {"Random", "Sorted", "Inversely Sorted", "File"};
         typeCombo = new JComboBox<>(arrayTypes);
-        runsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 50, 1));
+        runsSpinner = new JSpinner(new SpinnerNumberModel(5, 1, 1000, 1));
 
         chooseFileBtn = new JButton("Choose File");
         chooseFileBtn.setEnabled(false);
@@ -62,6 +63,12 @@ public class ComparisonPanel extends JPanel {
         controlPanel.add(Box.createHorizontalStrut(20));
         controlPanel.add(runBtn);
 
+        exportBtn = new JButton("Export CSV");
+        exportBtn.setBackground(new Color(0, 255, 150));
+        exportBtn.setForeground(Color.BLACK);
+        exportBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        controlPanel.add(Box.createHorizontalStrut(10)); // A little gap between Run and Export
+        controlPanel.add(exportBtn);
         add(controlPanel, BorderLayout.NORTH);
 
         String[] columns = {
@@ -160,6 +167,44 @@ public class ComparisonPanel extends JPanel {
             BenchmarkWorker worker = new BenchmarkWorker(size, mode, runs, selectedFiles);
             worker.execute();
         });
+
+        exportBtn.addActionListener(e -> {
+            if (tableModel.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "No data to export!", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save as CSV");
+            int userSelection = fileChooser.showSaveDialog(this);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+
+                if (!fileToSave.getName().toLowerCase().endsWith(".csv")) {
+                    fileToSave = new File(fileToSave.getParentFile(), fileToSave.getName() + ".csv");
+                }
+
+                try (PrintWriter writer = new PrintWriter(fileToSave)) {
+
+                    for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                        writer.print(tableModel.getColumnName(i));
+                        if (i < tableModel.getColumnCount() - 1) writer.print(",");
+                    }
+                    writer.println();
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                            writer.print(tableModel.getValueAt(i, j));
+                            if (j < tableModel.getColumnCount() - 1) writer.print(",");
+                        }
+                        writer.println();
+                    }
+                    JOptionPane.showMessageDialog(this, "Export Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error saving file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 
     private class BenchmarkWorker extends SwingWorker<Void, Object[]> {
@@ -182,54 +227,76 @@ public class ComparisonPanel extends JPanel {
                     new PureSelectionSort(),
                     new PureInsertionSort(),
                     new PureMergeSort(),
-                    new PureQuickSort(),
-                    new PureHeapSort()
+                    new PureHeapSort(),
+                    new PureQuickSort()
             };
 
             if (mode.equals("File")) {
                 for (File file : files) {
-                    int[] baseArray = DataGenerator.readFromFile(file.getAbsolutePath());
-                    runAlgorithmsOnArray(algorithms, baseArray, baseArray.length, file.getName());
+                    int[] fileArray = DataGenerator.readFromFile(file.getAbsolutePath());
+
+                    int[][] runArrays = new int[numRuns][];
+                    for (int i = 0; i < numRuns; i++) {
+                        runArrays[i] = fileArray; // Use the exact same file array
+                    }
+                    runAlgorithmsOnArrays(algorithms, runArrays, fileArray.length, file.getName());
                 }
             } else {
-                int[] baseArray;
+                int[][] runArrays = new int[numRuns][];
+
                 if (mode.equals("Sorted")) {
-                    baseArray = DataGenerator.generateSorted(size);
+                    // Generate once
+                    int[] singleSorted = DataGenerator.generateSorted(size);
+                    for (int i = 0; i < numRuns; i++) {
+                        runArrays[i] = singleSorted;
+                    }
                 } else if (mode.equals("Inversely Sorted")) {
-                    baseArray = DataGenerator.generateReversed(size);
+
+                    int[] singleInverse = DataGenerator.generateReversed(size);
+                    for (int i = 0; i < numRuns; i++) {
+                        runArrays[i] = singleInverse;
+                    }
                 } else {
-                    baseArray = DataGenerator.generateRandom(size);
+                    for (int i = 0; i < numRuns; i++) {
+                        runArrays[i] = DataGenerator.generateRandom(size);
+                    }
                 }
-                runAlgorithmsOnArray(algorithms, baseArray, size, mode);
+
+                runAlgorithmsOnArrays(algorithms, runArrays, size, mode);
             }
             return null;
         }
 
-        private void runAlgorithmsOnArray(SortAlgorithm[] algorithms, int[] baseArray, int currentSize, String modeText) {
+        private void runAlgorithmsOnArrays(SortAlgorithm[] algorithms, int[][] runArrays, int currentSize, String modeText) {
             for (SortAlgorithm algo : algorithms) {
                 long minTime = Long.MAX_VALUE;
                 long maxTime = Long.MIN_VALUE;
+
                 long totalTime = 0;
-                long comp = 0;
-                long swap = 0;
+                long totalComp = 0;
+                long totalSwap = 0;
 
                 for (int i = 0; i < numRuns; i++) {
-                    SortResult result = algo.sort(baseArray);
+
+                    SortResult result = algo.sort(runArrays[i]);
 
                     long time = result.runTimeNano;
                     totalTime += time;
                     if (time < minTime) minTime = time;
                     if (time > maxTime) maxTime = time;
 
-                    comp = result.comparisons;
-                    swap = result.interchanges;
+                    totalComp += result.comparisons;
+                    totalSwap += result.interchanges;
                 }
 
+
                 long avgTime = totalTime / numRuns;
+                long avgComp = totalComp / numRuns;
+                long avgSwap = totalSwap / numRuns;
 
                 Object[] rowData = {
                         algo.getName(), currentSize, modeText, numRuns,
-                        avgTime, minTime, maxTime, comp, swap
+                        avgTime, minTime, maxTime, avgComp, avgSwap
                 };
                 publish(rowData);
             }
